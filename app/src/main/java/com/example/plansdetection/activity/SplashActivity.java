@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.plansdetection.R;
-import com.example.plansdetection.fragment.DetectFragment;
 
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";

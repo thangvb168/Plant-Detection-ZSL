@@ -103,7 +103,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:id="@+id/progress_bar"/>
+        android:id="@+id/progress_bar"
+        android:background="#802EBA90"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

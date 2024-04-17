@@ -1,5 +1,6 @@
 package com.example.plansdetection.adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.plansdetection.R;
+import com.example.plansdetection.activity.NewsFullActivity;
 import com.kwabenaberko.newsapilib.models.Article;
 import com.squareup.picasso.Picasso;
 
@@ -36,6 +38,12 @@ public class NewsRecycleAdapter extends RecyclerView.Adapter<NewsRecycleAdapter.
                 .error(R.drawable.ic_no_img)
                 .placeholder(R.drawable.ic_no_img)
                 .into(holder.ivNewsImage);
+
+        holder.itemView.setOnClickListener((v -> {
+            Intent intent = new Intent(v.getContext(), NewsFullActivity.class);
+            intent.putExtra("url", article.getUrl());
+            v.getContext().startActivity(intent);
+        }));
     }
 
     @Override

@@ -8,7 +8,8 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -20,6 +21,9 @@
         android:theme="@style/Theme.PlansDetection"
         tools:targetApi="31">
         <activity
+            android:name=".activity.NewsFullActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.SplashActivity"
             android:exported="true">
             <intent-filter>
@@ -30,9 +34,6 @@
         </activity>
         <activity
             android:name=".activity.CameraActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.ResultActivity"
             android:exported="false" />
         <activity
             android:name=".activity.MainActivity"
