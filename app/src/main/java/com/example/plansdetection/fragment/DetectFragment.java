@@ -1,11 +1,6 @@
 package com.example.plansdetection.fragment;
 
-import android.Manifest;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -13,235 +8,92 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.camera.core.AspectRatio;
-import androidx.camera.core.Camera;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureException;
-import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.example.plansdetection.R;
-import com.example.plansdetection.activity.ResultActivity;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.example.plansdetection.activity.CameraActivity;
+import com.example.plansdetection.model.Classifier;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 
 public class DetectFragment extends Fragment {
-
+    private ImageView ivPhotoDetect, ivCapture, ivAlbum;
+    private TextView tvImage, tvResult, tvConfidence;
     private static final int REQUEST_CODE_PICK_IMAGE = 1001;
-
-    ImageButton capture;
-    ImageView capturedImageView;
-    Button btnSave, btnTake;
-    private ActivityResultLauncher<String> activityResultLauncher;
-    private View rootView;
-    private int cameraFacing = CameraSelector.LENS_FACING_BACK;
-    private PreviewView previewView;
-
-    public DetectFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_detect, container, false);
-        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+        View view =  inflater.inflate(R.layout.fragment_detect, container, false);
+        ivPhotoDetect = view.findViewById(R.id.ivPhotoDetect);
+        ivCapture = view.findViewById(R.id.ivCapture);
+        ivAlbum = view.findViewById(R.id.ivAlbum);
+        tvImage = view.findViewById(R.id.tvImage);
+        tvResult = view.findViewById(R.id.tvResult);
+        tvConfidence = view.findViewById(R.id.tvConfidence);
+
+        ivCapture.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onActivityResult(Boolean result) {
-                if (result) {
-                    addControls(rootView);
-                }
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), CameraActivity.class);
+                startActivity(intent);
             }
         });
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            activityResultLauncher.launch(Manifest.permission.CAMERA);
-        } else {
-            addControls(rootView);
-        }
-        return rootView;
-    }
 
-    private void addControls(View view) {
-        previewView = view.findViewById(R.id.cameraPreview);
-        capture = view.findViewById(R.id.capture);
-        capturedImageView = view.findViewById(R.id.capturedImageView);
-        btnSave = view.findViewById(R.id.btnSave);
-        btnSave.setVisibility(View.GONE);
-
-        btnTake = view.findViewById(R.id.btnTake);
-        btnTake.setOnClickListener(new View.OnClickListener() {
+        ivAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFilePicker();
             }
         });
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (capturedImageView.getVisibility() == View.VISIBLE) {
-                    Intent intent = new Intent(requireContext(), ResultActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(requireContext(), "Don't have image", Toast.LENGTH_SHORT).show();
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String imagePath = bundle.getString("EXTRA_IMAGE_PATH");
+
+            // Hiển thị ảnh lên ImageView
+            if (imagePath != null) {
+                tvImage.setVisibility(View.GONE);
+                File imgFile = new File(imagePath);
+                if (imgFile.exists()) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    ivPhotoDetect.setImageBitmap(myBitmap);
+
+                    // Tạo Uri từ đường dẫn của ảnh
+                    Uri imageUri = Uri.fromFile(imgFile);
+                    // Lấy hướng xoay của ảnh từ Uri
+                    int orientation = getOrientationFromGallery(imageUri);
+                    // Xoay ảnh nếu cần
+//                    rotateBitmap(myBitmap, orientation);
+
+                    showPredition(myBitmap);
                 }
             }
-        });
+        }
 
-        startCamera(cameraFacing);
+        return view;
     }
 
-    public void startCamera(int cameraFacing) {
-        int aspectRatio = aspectRatio(previewView.getWidth(), previewView.getHeight());
-        ListenableFuture<ProcessCameraProvider> listenableFuture = ProcessCameraProvider.getInstance(requireContext());
-
-        listenableFuture.addListener(() -> {
-            try {
-                ProcessCameraProvider cameraProvider = listenableFuture.get();
-
-                Preview preview = new Preview.Builder().setTargetAspectRatio(aspectRatio).build();
-
-                ImageCapture imageCapture = new ImageCapture.Builder()
-                        .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                        .setTargetRotation(Surface.ROTATION_0)
-                        .build();
-
-                CameraSelector cameraSelector = new CameraSelector.Builder()
-                        .requireLensFacing(cameraFacing).build();
-
-                cameraProvider.unbindAll();
-
-                Camera camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
-
-                capture.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                            activityResultLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                        }
-                        takePicture(imageCapture);
-
-                    }
-                });
-
-                preview.setSurfaceProvider(previewView.getSurfaceProvider());
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        }, ContextCompat.getMainExecutor(requireContext()));
-    }
-
-    public void takePicture(ImageCapture imageCapture) {
-        final File file = new File(requireContext().getExternalFilesDir(null), System.currentTimeMillis() + ".jpg");
-        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
-        imageCapture.takePicture(outputFileOptions, Executors.newCachedThreadPool(), new ImageCapture.OnImageSavedCallback() {
-            @Override
-            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        previewView.setVisibility(View.GONE);
-                        capturedImageView.setVisibility(View.VISIBLE);
-                        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                        ExifInterface exif = null;
-                        try {
-                            exif = new ExifInterface(file.getAbsolutePath());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        int orientation = ExifInterface.ORIENTATION_NORMAL;
-                        if (exif != null) {
-                            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                        }
-                        bitmap = rotateBitmap(bitmap, orientation);
-                        capturedImageView.setImageBitmap(bitmap);
-
-                        // Lưu ảnh vào thư viện ảnh của thiết bị
-                        saveImageToGallery(bitmap);
-                        btnSave.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(requireContext(), "Failed to save: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                startCamera(cameraFacing);
-            }
-        });
-        capturedImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                previewView.setVisibility(View.VISIBLE);
-                capturedImageView.setVisibility(View.GONE);
-                startCamera(cameraFacing);
-                btnSave.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void saveImageToGallery(Bitmap bitmap) {
-        // Tạo một tệp tin mới cho ảnh
-        String fileName = "IMG_" + System.currentTimeMillis() + ".jpg";
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-
-        ContentResolver resolver = requireContext().getContentResolver();
-        Uri imageUri = null;
+    private void showPredition(Bitmap bitmap) {
         try {
-            // Insert ảnh vào MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            if (imageUri != null) {
-                OutputStream outputStream = resolver.openOutputStream(imageUri);
-                if (outputStream != null) {
-                    // Lưu ảnh vào OutputStream
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                    outputStream.close();
-                    Toast.makeText(requireContext(), "Image saved to gallery", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+            Classifier classifier = new Classifier(getContext());
+            String[] rs = classifier.predict(bitmap);
+            tvResult.setText(rs[0]);
+            tvConfidence.setText(rs[1]);
 
-    private int aspectRatio(int width, int height) {
-        double previewRatio = (double) Math.max(width, height) / Math.min(width, height);
-        if (Math.abs(previewRatio - 4.0 / 3.0) <= Math.abs(previewRatio - 16.0 / 9.0)) {
-            return AspectRatio.RATIO_4_3;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return AspectRatio.RATIO_16_9;
     }
 
     private void openFilePicker() {
@@ -250,10 +102,31 @@ public class DetectFragment extends Fragment {
         startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == getActivity().RESULT_OK) {
+            if (data != null) {
+                Uri imageUri = data.getData();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
+                    // Kiểm tra hướng xoay của ảnh và xoay nếu cần
+                    showPredition(bitmap);
+                    int orientation = getOrientationFromGallery(imageUri);
+                    rotateBitmap(bitmap, orientation);
+                    // Hiển thị ảnh lên ImageView
+                    ivPhotoDetect.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private int getOrientationFromGallery(Uri imageUri) {
         int orientation = ExifInterface.ORIENTATION_NORMAL;
         try {
-            ExifInterface exif = new ExifInterface(getRealPathFromURI(imageUri));
+            ExifInterface exif = new ExifInterface(requireActivity().getContentResolver().openInputStream(imageUri));
             orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
         } catch (IOException e) {
             e.printStackTrace();
@@ -261,7 +134,7 @@ public class DetectFragment extends Fragment {
         return orientation;
     }
 
-    private Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+    private void rotateBitmap(Bitmap bitmap, int orientation) {
         Matrix matrix = new Matrix();
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
@@ -274,19 +147,12 @@ public class DetectFragment extends Fragment {
                 matrix.postRotate(270);
                 break;
             default:
-                return bitmap;
+                // Không cần xoay nếu hướng là mặc định
+                return;
         }
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-    }
-
-    private String getRealPathFromURI(Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = requireContext().getContentResolver().query(uri, projection, null, null, null);
-        if (cursor == null) return null;
-        cursor.moveToFirst();
-        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        String path = cursor.getString(columnIndex);
-        cursor.close();
-        return path;
+        // Áp dụng ma trận biến đổi cho Bitmap
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        bitmap.recycle(); // Giải phóng bộ nhớ của bitmap ban đầu
+        ivPhotoDetect.setImageBitmap(rotatedBitmap);
     }
 }

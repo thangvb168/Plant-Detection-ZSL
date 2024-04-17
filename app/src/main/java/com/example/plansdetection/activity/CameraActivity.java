@@ -4,7 +4,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
@@ -15,8 +14,6 @@ import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -38,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.plansdetection.R;
-import com.example.plansdetection.fragment.FixDetectFragment;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;

@@ -13,9 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.plansdetection.R;
-import com.example.plansdetection.fragment.FixDetectFragment;
-import com.example.plansdetection.fragment.ManageFragment;
 import com.example.plansdetection.fragment.DetectFragment;
+import com.example.plansdetection.fragment.ManageFragment;
 import com.example.plansdetection.fragment.SettingFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,14 +48,14 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("EXTRA_IMAGE_PATH")) {
             String imagePath = intent.getStringExtra("EXTRA_IMAGE_PATH");
-            FixDetectFragment fixDetectFragment = new FixDetectFragment();
+            DetectFragment detectFragment = new DetectFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             Bundle bundle = new Bundle();
             bundle.putString("EXTRA_IMAGE_PATH", imagePath);
-            fixDetectFragment.setArguments(bundle);
+            detectFragment.setArguments(bundle);
 
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_layout, fixDetectFragment);
+            fragmentTransaction.replace(R.id.fragment_layout, detectFragment);
             fragmentTransaction.commit();
             ivManage.setImageResource(R.drawable.farm_management_tab);
             ivDetect.setImageResource(R.drawable.disease_detection_tab_selected);
@@ -91,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     tvManage.setTextSize(14);
                     tvDetect.setTextSize(16);
                     tvUser.setTextSize(14);
-                    replaceFragment(new FixDetectFragment());
+                    replaceFragment(new DetectFragment());
                     TabClick = false;
             }
         });
