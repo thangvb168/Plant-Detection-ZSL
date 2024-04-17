@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +23,14 @@ import android.widget.TextView;
 
 import com.example.plansdetection.R;
 import com.example.plansdetection.activity.CameraActivity;
+import com.example.plansdetection.model.Classifier;
 
 import java.io.File;
 import java.io.IOException;
 
 public class FixDetectFragment extends Fragment {
     private ImageView ivPhotoDetect, ivCapture, ivAlbum;
-    private TextView tvImage;
+    private TextView tvImage, tvResult, tvConfidence;
     private static final int REQUEST_CODE_PICK_IMAGE = 1001;
 
     @Override
@@ -40,6 +42,8 @@ public class FixDetectFragment extends Fragment {
         ivCapture = view.findViewById(R.id.ivCapture);
         ivAlbum = view.findViewById(R.id.ivAlbum);
         tvImage = view.findViewById(R.id.tvImage);
+        tvResult = view.findViewById(R.id.tvResult);
+        tvConfidence = view.findViewById(R.id.tvConfidence);
 
         ivCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,13 +76,27 @@ public class FixDetectFragment extends Fragment {
                     // Lấy hướng xoay của ảnh từ Uri
                     int orientation = getOrientationFromGallery(imageUri);
                     // Xoay ảnh nếu cần
-                    rotateBitmap(myBitmap, orientation);
+//                    rotateBitmap(myBitmap, orientation);
+
                     tvImage.setVisibility(View.GONE);
+                    showPredition(myBitmap);
                 }
             }
         }
 
         return view;
+    }
+
+    private void showPredition(Bitmap bitmap) {
+        try {
+            Classifier classifier = new Classifier(getContext());
+            String[] rs = classifier.predict(bitmap);
+            tvResult.setText(rs[0]);
+            tvConfidence.setText(rs[1]);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void openFilePicker() {
@@ -96,6 +114,7 @@ public class FixDetectFragment extends Fragment {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
                     // Kiểm tra hướng xoay của ảnh và xoay nếu cần
+                    showPredition(bitmap);
                     int orientation = getOrientationFromGallery(imageUri);
                     rotateBitmap(bitmap, orientation);
                     // Hiển thị ảnh lên ImageView
