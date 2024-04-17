@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/manage"
+        android:title="Manage"
+        android:icon="@drawable/farm_management_tab"
+        />
+    <item
+        android:id="@+id/detect"
+        android:title="Detect"
+        android:icon="@drawable/disease_detection_tab"
+        />
+    <item
+        android:id="@+id/settings"
+        android:title="Me"
+        android:icon="@drawable/user_profile_tab" />
+
+</menu>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".activity.CameraActivity">
+
+    <androidx.camera.view.PreviewView
+        android:layout_width="match_parent"
+        android:layout_height="700dp"
+        android:id="@+id/cameraPreview"/>
+    <ImageView
+        android:id="@+id/capturedImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:scaleType="fitCenter" />
+    <ImageButton
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10sp"
+        android:src="@drawable/ic_arrow_back"
+        android:id="@+id/arrowBack"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+    <ImageButton
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="10sp"
+        android:src="@drawable/baseline_flash_off_24"
+        app:tint="#fff"
+        android:id="@+id/toggleFlash"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+    <ImageButton
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:layout_below="@id/toggleFlash"
+        android:layout_marginEnd="10sp"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/flipCamera"
+        android:src="@drawable/round_flip_camera_android_24"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="#fff" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <ImageButton
+            android:id="@+id/capture"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerCrop"
+            android:src="@drawable/round_camera_24"
+            app:tint="#fff" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="283dp"
+            android:layout_marginBottom="12dp"
+            android:text="Submit"
+            android:fontFamily="@font/lato"
+            android:textColor="#6BC05D"
+            android:textAllCaps="false"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+    </RelativeLayout>
+
+</RelativeLayout>
