@@ -109,6 +109,7 @@ public class DetectFragment extends Fragment {
             if (data != null) {
                 Uri imageUri = data.getData();
                 try {
+                    tvImage.setVisibility(View.GONE);
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
                     // Kiểm tra hướng xoay của ảnh và xoay nếu cần
                     showPredition(bitmap);
