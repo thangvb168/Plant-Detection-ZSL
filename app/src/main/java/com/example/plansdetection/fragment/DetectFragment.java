@@ -9,9 +9,11 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,8 @@ import java.io.IOException;
 
 public class DetectFragment extends Fragment {
     private ImageView ivPhotoDetect, ivCapture, ivAlbum;
-    private TextView tvImage, tvResult, tvConfidence;
+    private TextView tvImage, tvResult, tvConfidence, tvOrigin;
+    private CardView cardOrigin;
     private static final int REQUEST_CODE_PICK_IMAGE = 1001;
 
     @Override
@@ -41,6 +44,9 @@ public class DetectFragment extends Fragment {
         tvImage = view.findViewById(R.id.tvImage);
         tvResult = view.findViewById(R.id.tvResult);
         tvConfidence = view.findViewById(R.id.tvConfidence);
+        cardOrigin = view.findViewById(R.id.cardOrigin);
+        tvOrigin = view.findViewById(R.id.tvOrigin);
+        cardOrigin.setVisibility(View.GONE);
 
         ivCapture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +66,9 @@ public class DetectFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             String imagePath = bundle.getString("EXTRA_IMAGE_PATH");
+            String qrCodeValue = bundle.getString("EXTRA_QR_CODE");
 
+            Log.v("ABC", "QR : " + qrCodeValue);
             // Hiển thị ảnh lên ImageView
             if (imagePath != null) {
                 tvImage.setVisibility(View.GONE);
@@ -77,6 +85,10 @@ public class DetectFragment extends Fragment {
 //                    rotateBitmap(myBitmap, orientation);
 
                     showPredition(myBitmap);
+                }
+                if (qrCodeValue != null) {
+                    cardOrigin.setVisibility(View.VISIBLE);
+                    tvOrigin.setText(qrCodeValue);
                 }
             }
         }
@@ -155,5 +167,10 @@ public class DetectFragment extends Fragment {
         Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         bitmap.recycle(); // Giải phóng bộ nhớ của bitmap ban đầu
         ivPhotoDetect.setImageBitmap(rotatedBitmap);
+    }
+
+    public void onQRCodeScanned(String qrCodeValue) {
+        cardOrigin.setVisibility(View.VISIBLE);
+        tvOrigin.setText(qrCodeValue);
     }
 }
