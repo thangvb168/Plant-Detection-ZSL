@@ -48,8 +48,10 @@ dependencies {
     implementation ("androidx.camera:camera-camera2:1.2.2")
     implementation ("androidx.camera:camera-lifecycle:1.2.2")
     implementation ("androidx.camera:camera-view:1.2.2")
-    implementation("com.google.mlkit:vision-common:17.3.0")
-    implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0")
+//    implementation("com.google.mlkit:vision-common:17.3.0")
+//    implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation ("com.google.zxing:core:3.5.3")
     implementation ("com.github.KwabenBerko:News-API-Java:1.0.2")
     implementation("com.squareup.picasso:picasso:2.8")
 }

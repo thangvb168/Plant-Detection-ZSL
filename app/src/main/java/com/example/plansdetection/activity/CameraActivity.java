@@ -8,10 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
-import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -26,12 +24,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.util.Size;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
@@ -40,37 +35,34 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.plansdetection.R;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.example.plansdetection.fragment.DetectFragment;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.client.android.Intents;
+import com.google.zxing.common.HybridBinarizer;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.mlkit.vision.barcode.BarcodeScanner;
-import com.google.mlkit.vision.barcode.BarcodeScanning;
-import com.google.mlkit.vision.barcode.common.Barcode;
-import com.google.mlkit.vision.common.InputImage;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-
 
 public class CameraActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_PICK_IMAGE = 1001;
     public static final String EXTRA_IMAGE_PATH = "image_path";
 
-    private QRCodeListener qrCodeListener;
     ImageButton capture, toggleFlash, flipCamera, arrowBack;
     ImageView capturedImageView;
     Button btnSave;
     private PreviewView previewView;
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
-    private String scannedQRCode;
-    public void setQRCodeListener(QRCodeListener listener) {
-        this.qrCodeListener = listener;
-    }
-
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
         @Override
         public void onActivityResult(Boolean result) {
@@ -133,58 +125,13 @@ public class CameraActivity extends AppCompatActivity {
     private void setupBackBtn() {
         arrowBack.setOnClickListener(v -> onBackPressed());
     }
-    public interface QRCodeListener {
-        void onQRCodeScanned(String qrCodeValue);
-    }
-
-    public void onQRCodeScanned(String qrCodeValue) {
-        scannedQRCode = qrCodeValue; // Lưu giá trị mã QR
-        // Gửi giá trị mã QR sang MainActivity
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("EXTRA_QR_CODE", scannedQRCode);
-        startActivity(intent);
-    }
     public void startCamera(int cameraFacing) {
         int aspectRatio = aspectRatio(previewView.getWidth(), previewView.getHeight());
         ListenableFuture<ProcessCameraProvider> listenableFuture = ProcessCameraProvider.getInstance(this);
-        Log.v("ABC", "Im here in start Cam");
+
         listenableFuture.addListener(() -> {
             try {
-                Log.v("ABC", "Im here in addListener");
                 ProcessCameraProvider cameraProvider = listenableFuture.get();
-                ImageAnalysis imageAnalysis = new ImageAnalysis.Builder().setTargetResolution(new Size(1280, 720))
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
-                Log.v("ABC", "Im here in pass val addListener");
-
-//                START BUGS
-                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), new ImageAnalysis.Analyzer() {
-                    @Override
-                    public void analyze(@NonNull ImageProxy image) {
-                        Log.v("ABC", "Im here in analyze");
-                        Image mediaImage = image.getImage();
-                        if(mediaImage!=null) {
-                            InputImage image1 = InputImage.fromMediaImage(mediaImage, image.getImageInfo().getRotationDegrees());
-                            BarcodeScanner scanner = BarcodeScanning.getClient();
-                            Task<List<Barcode>> results = scanner.process(image1);
-                            results.addOnSuccessListener(new OnSuccessListener<List<Barcode>>() {
-                                @Override
-                                public void onSuccess(List<Barcode> barcodes) {
-                                    for (Barcode barcode : barcodes){
-                                        final String getValue = barcode.getRawValue();
-
-                                        if (qrCodeListener != null) {
-                                            Log.v("ABC", " Ko NULL rồi");
-                                            qrCodeListener.onQRCodeScanned(getValue);
-                                        } else {
-                                            Log.v("ABC", "NULL rồi");
-                                        }
-                                    }
-                                }
-                            });
-
-                        }
-                    }
-                });
 
                 Preview preview = new Preview.Builder().setTargetAspectRatio(aspectRatio).build();
 
@@ -250,25 +197,35 @@ public class CameraActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        previewView.setVisibility(View.GONE);
-                        capturedImageView.setVisibility(View.VISIBLE);
                         Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                        ExifInterface exif = null;
-                        try {
-                            exif = new ExifInterface(file.getAbsolutePath());
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        String qrCodeData = decodeQRCodeFromBitmap(bitmap);
+                        if (qrCodeData != null) {
+                            // Nếu tìm thấy mã QR, truyền giá trị sang DetectFragment
+                            Bundle bundle = new Bundle();
+                            bundle.putString("QR_CODE_DATA", qrCodeData);
+                            Intent intent = new Intent(CameraActivity.this, DetectFragment.class);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        } else {
+                            previewView.setVisibility(View.GONE);
+                            capturedImageView.setVisibility(View.VISIBLE);
+                            ExifInterface exif = null;
+                            try {
+                                exif = new ExifInterface(file.getAbsolutePath());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            int orientation = ExifInterface.ORIENTATION_NORMAL;
+                            if (exif != null) {
+                                orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                            }
+                            bitmap = rotateBitmap(bitmap, orientation);
+                            capturedImageView.setImageBitmap(bitmap);
+                            capturedImageView.setTag(file.getAbsolutePath());
+                            saveImageToGallery(bitmap);
+                            btnSave.setVisibility(View.VISIBLE);
+                            Toast.makeText(CameraActivity.this, "Tap the screen to retake the photo", Toast.LENGTH_LONG).show();
                         }
-                        int orientation = ExifInterface.ORIENTATION_NORMAL;
-                        if (exif != null) {
-                            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                        }
-                        bitmap = rotateBitmap(bitmap, orientation);
-                        capturedImageView.setImageBitmap(bitmap);
-                        capturedImageView.setTag(file.getAbsolutePath());
-                        saveImageToGallery(bitmap);
-                        btnSave.setVisibility(View.VISIBLE);
-                        Toast.makeText(CameraActivity.this, "Tap the screen to retake the photo", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -295,6 +252,29 @@ public class CameraActivity extends AppCompatActivity {
         });
     }
 
+    // Phương thức quét mã QR từ bitmap
+    private String decodeQRCodeFromBitmap(Bitmap bitmap) {
+        Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
+        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+
+        try {
+            com.google.zxing.Reader reader = new MultiFormatReader();
+            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), getRGBLuminanceSource(bitmap))));
+            Result result = reader.decode(binaryBitmap, hints);
+            return result.getText();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    // Phương thức trả về mảng các giá trị RGB từ bitmap
+    private int[] getRGBLuminanceSource(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int[] pixels = new int[width * height];
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+        return pixels;
+    }
     private int aspectRatio(int width, int height) {
         double previewRatio = (double) Math.max(width, height) / Math.min(width, height);
         if (Math.abs(previewRatio - 4.0 / 3.0) <= Math.abs(previewRatio - 16.0 / 9.0)) {

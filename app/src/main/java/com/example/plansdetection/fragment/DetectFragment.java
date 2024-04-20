@@ -66,9 +66,9 @@ public class DetectFragment extends Fragment {
         Bundle bundle = getArguments();
         if (bundle != null) {
             String imagePath = bundle.getString("EXTRA_IMAGE_PATH");
-            String qrCodeValue = bundle.getString("EXTRA_QR_CODE");
+//            String qrCodeValue = bundle.getString("EXTRA_QR_CODE");
 
-            Log.v("ABC", "QR : " + qrCodeValue);
+//            Log.v("ABC", "QR : " + qrCodeValue);
             // Hiển thị ảnh lên ImageView
             if (imagePath != null) {
                 tvImage.setVisibility(View.GONE);
@@ -86,10 +86,15 @@ public class DetectFragment extends Fragment {
 
                     showPredition(myBitmap);
                 }
-                if (qrCodeValue != null) {
-                    cardOrigin.setVisibility(View.VISIBLE);
-                    tvOrigin.setText(qrCodeValue);
-                }
+//                if (qrCodeValue != null) {
+//                    cardOrigin.setVisibility(View.VISIBLE);
+//                    tvOrigin.setText(qrCodeValue);
+//                }
+            }
+            String qrCodeData = bundle.getString("QR_CODE_DATA");
+            if (qrCodeData != null) {
+                cardOrigin.setVisibility(View.VISIBLE);
+                tvOrigin.setText(qrCodeData);
             }
         }
 
