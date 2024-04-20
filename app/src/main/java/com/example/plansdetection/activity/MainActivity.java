@@ -46,21 +46,39 @@ public class MainActivity extends AppCompatActivity {
         TabClick = true;
         Log.v(TAG, "onCreate Main");
         Intent intent = getIntent();
-        if (intent.hasExtra("EXTRA_IMAGE_PATH")) {
+        if (intent != null && intent.hasExtra("EXTRA_IMAGE_PATH")) {
             String imagePath = intent.getStringExtra("EXTRA_IMAGE_PATH");
-            DetectFragment detectFragment = new DetectFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
+            String qrCodeValue = null;
+
+            // Kiểm tra xem có EXTRA_QR_CODE trong Intent không
+            if (intent.hasExtra("EXTRA_QR_CODE")) {
+                qrCodeValue = intent.getStringExtra("EXTRA_QR_CODE");
+            }
+
+            // Tạo Bundle để truyền dữ liệu đến DetectFragment
             Bundle bundle = new Bundle();
             bundle.putString("EXTRA_IMAGE_PATH", imagePath);
+
+            // Nếu có giá trị QR Code, thêm vào Bundle
+            if (qrCodeValue != null) {
+                bundle.putString("EXTRA_QR_CODE", qrCodeValue);
+            }
+
+            // Khởi tạo DetectFragment và gửi dữ liệu thông qua Bundle
+            DetectFragment detectFragment = new DetectFragment();
             detectFragment.setArguments(bundle);
 
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_layout, detectFragment);
-            fragmentTransaction.commit();
+            // Thay thế Fragment hiện tại bằng DetectFragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_layout, detectFragment)
+                    .commit();
+
+            // Đảm bảo chỉ một Fragment được hiển thị tại một thời điểm
             ivManage.setImageResource(R.drawable.farm_management_tab);
             ivDetect.setImageResource(R.drawable.disease_detection_tab_selected);
             ivUser.setImageResource(R.drawable.user_profile_tab);
         } else {
+            // Nếu không có EXTRA_IMAGE_PATH trong Intent, chuyển sang Fragment quản lý
             Log.v(TAG, "Run Manager");
             replaceFragment(new ManageFragment());
         }

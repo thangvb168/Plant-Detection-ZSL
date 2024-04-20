@@ -68,7 +68,7 @@
     </LinearLayout>
     <androidx.cardview.widget.CardView
         android:layout_width="320dp"
-        android:layout_height="300dp"
+        android:layout_height="200dp"
         android:layout_marginTop="30dp"
         android:layout_gravity="center_horizontal"
         app:cardElevation="5dp"
@@ -93,7 +93,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="#C30000"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="22sp"
+                android:gravity="center"
                 android:id="@+id/tvResult"
                 android:layout_marginVertical="10dp"
                 android:maxLines="2"/>
@@ -104,7 +105,7 @@
                 android:id="@+id/confidencesText"
                 android:text="Confidences:"
                 android:textStyle="bold"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:fontFamily="@font/lato"
                 android:layout_marginVertical="10dp"
                 />
@@ -116,6 +117,35 @@
                 android:textSize="22sp"
                 android:id="@+id/tvConfidence"
                 />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="320dp"
+        android:layout_height="200dp"
+        android:id="@+id/cardOrigin"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"
+        app:cardElevation="5dp"
+        app:cardCornerRadius="15dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Origin:"
+                android:textStyle="bold"
+                android:textSize="22sp"
+                android:layout_marginVertical="20dp"
+                android:fontFamily="@font/lato"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:id="@+id/tvOrigin"
+                android:fontFamily="@font/lato"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
