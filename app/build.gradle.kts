@@ -52,4 +52,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.0")
     implementation ("com.github.KwabenBerko:News-API-Java:1.0.2")
     implementation("com.squareup.picasso:picasso:2.8")
+
+//    RETROFIT
+    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.10.1")
 }
