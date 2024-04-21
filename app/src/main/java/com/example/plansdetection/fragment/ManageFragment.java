@@ -139,33 +139,6 @@ public class ManageFragment extends Fragment implements View.OnClickListener{
         else
             progress_bar.setVisibility(View.GONE);
     }
-//    void getNews(String category){
-//        changeInProgress(true);
-//        NewsApiClient newsApiClient = new NewsApiClient("6586f7a335994ab1a06bc7bc5ed0415b");
-//        newsApiClient.getTopHeadlines(
-//                new TopHeadlinesRequest.Builder()
-//                        .language("en")
-//                        .category(category)
-//                        .build(),
-//                new NewsApiClient.ArticlesResponseCallback() {
-//                    @Override
-//                    public void onSuccess(ArticleResponse response) {
-//                        requireActivity().runOnUiThread(()->{
-//                            changeInProgress(false);
-//                            articleList.clear();
-//                            articleList.addAll(response.getArticles());
-//                            adapter.notifyDataSetChanged();
-//                        });
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Throwable throwable) {
-//                        Log.i("GOT FAILURE", throwable.getMessage());
-//                    }
-//                }
-//        );
-//    }
-
 //    REBUILD GET NEWS
     private void getNews(String category) {
         changeInProgress(true);

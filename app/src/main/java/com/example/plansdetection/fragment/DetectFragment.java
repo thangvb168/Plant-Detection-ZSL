@@ -7,12 +7,11 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-
 import android.provider.MediaStore;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,24 +19,82 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+
 import com.example.plansdetection.R;
 import com.example.plansdetection.activity.CameraActivity;
+import com.example.plansdetection.helper.ProcessingImage;
+import com.example.plansdetection.helper.ScanQR;
 import com.example.plansdetection.model.Classifier;
 
 import java.io.File;
 import java.io.IOException;
+
 
 public class DetectFragment extends Fragment {
     private ImageView ivPhotoDetect, ivCapture, ivAlbum;
     private TextView tvImage, tvResult, tvConfidence, tvOrigin;
     private CardView cardOrigin;
     private static final int REQUEST_CODE_PICK_IMAGE = 1001;
+//    PROCESSING IMAGE CLASS
+    ProcessingImage processingImage;
+//    SCAN QR CODE
+    ScanQR scanQR;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_detect, container, false);
+        addControls(view);
+        addEvents();
+
+        return view;
+    }
+
+    private void addEvents() {
+//        START CAMERA
+        ivCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), CameraActivity.class);
+                startActivity(intent);
+            }
+        });
+//        SHOW LIBRARIES PICTURE
+        ivAlbum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFilePicker();
+            }
+        });
+
+//        GET IMAGE FROM BUNDLE
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String imagePath = bundle.getString("EXTRA_IMAGE_PATH");
+            if (imagePath != null) {
+                tvImage.setVisibility(View.GONE);
+                File imgFile = new File(imagePath);
+                if (imgFile.exists()) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    Uri imageUri = Uri.fromFile(imgFile);
+                    handleImage(myBitmap);
+                    rotateBitmap(myBitmap, imageUri);
+                }
+            }
+//            SET QR CODE
+            String qrCodeData = bundle.getString("QR_CODE_DATA");
+            if (qrCodeData != null) {
+                cardOrigin.setVisibility(View.VISIBLE);
+                tvOrigin.setText(qrCodeData);
+            }
+        }
+    }
+
+    private void addControls(View view) {
         ivPhotoDetect = view.findViewById(R.id.ivPhotoDetect);
         ivCapture = view.findViewById(R.id.ivCapture);
         ivAlbum = view.findViewById(R.id.ivAlbum);
@@ -48,63 +105,45 @@ public class DetectFragment extends Fragment {
         tvOrigin = view.findViewById(R.id.tvOrigin);
         cardOrigin.setVisibility(View.GONE);
 
-        ivCapture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), CameraActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        ivAlbum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFilePicker();
-            }
-        });
-
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            String imagePath = bundle.getString("EXTRA_IMAGE_PATH");
-//            String qrCodeValue = bundle.getString("EXTRA_QR_CODE");
-
-//            Log.v("ABC", "QR : " + qrCodeValue);
-            // Hiển thị ảnh lên ImageView
-            if (imagePath != null) {
-                tvImage.setVisibility(View.GONE);
-                File imgFile = new File(imagePath);
-                if (imgFile.exists()) {
-                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    ivPhotoDetect.setImageBitmap(myBitmap);
-
-                    // Tạo Uri từ đường dẫn của ảnh
-                    Uri imageUri = Uri.fromFile(imgFile);
-                    // Lấy hướng xoay của ảnh từ Uri
-                    int orientation = getOrientationFromGallery(imageUri);
-                    // Xoay ảnh nếu cần
-//                    rotateBitmap(myBitmap, orientation);
-
-                    showPredition(myBitmap);
-                }
-//                if (qrCodeValue != null) {
-//                    cardOrigin.setVisibility(View.VISIBLE);
-//                    tvOrigin.setText(qrCodeValue);
-//                }
-            }
-            String qrCodeData = bundle.getString("QR_CODE_DATA");
-            if (qrCodeData != null) {
-                cardOrigin.setVisibility(View.VISIBLE);
-                tvOrigin.setText(qrCodeData);
-            }
-        }
-
-        return view;
+        processingImage = new ProcessingImage(getContext());
+        scanQR = new ScanQR();
     }
 
-    private void showPredition(Bitmap bitmap) {
+    private void handleImage(Bitmap bitmap) {
+        Bitmap imageHandled = processingImage.handleImage(bitmap);
+//        CHECK QRCODE
+        scanQR.decode(bitmap, new ScanQR.ScanCallback() {
+            @Override
+            public void onSuccess(String qrCodeValue) {
+                displayQRCode(qrCodeValue);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                noDisplayQRCode();
+            }
+        });
+
+//        CHECK CLASSIFIER
+        Log.d("HANDLE_IMAGE", "SIZE OF IMAGE : " + imageHandled.getHeight() + "x" + imageHandled.getWidth());
+        showPrediction(imageHandled);
+    }
+
+    private void displayQRCode(String msg) {
+        cardOrigin.setVisibility(View.VISIBLE);
+        tvOrigin.setText(msg);
+    }
+
+    private void noDisplayQRCode() {
+        cardOrigin.setVisibility(View.GONE);
+        tvOrigin.setText("");
+    }
+
+    private void showPrediction(Bitmap bitmap) {
         try {
             Classifier classifier = new Classifier(getContext());
             String[] rs = classifier.predict(bitmap);
+            Log.d("HANDLE_IMAGE", "PREDICTION::" + rs[0]);
             tvResult.setText(rs[0]);
             tvConfidence.setText(rs[1]);
 
@@ -128,12 +167,8 @@ public class DetectFragment extends Fragment {
                 try {
                     tvImage.setVisibility(View.GONE);
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
-                    // Kiểm tra hướng xoay của ảnh và xoay nếu cần
-                    showPredition(bitmap);
-                    int orientation = getOrientationFromGallery(imageUri);
-                    rotateBitmap(bitmap, orientation);
-                    // Hiển thị ảnh lên ImageView
-                    ivPhotoDetect.setImageBitmap(bitmap);
+                    handleImage(bitmap);
+                    rotateBitmap(bitmap, imageUri);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -152,7 +187,8 @@ public class DetectFragment extends Fragment {
         return orientation;
     }
 
-    private void rotateBitmap(Bitmap bitmap, int orientation) {
+    private void rotateBitmap(Bitmap bitmap, Uri imageUri) {
+        int orientation = getOrientationFromGallery(imageUri);
         Matrix matrix = new Matrix();
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
@@ -165,17 +201,13 @@ public class DetectFragment extends Fragment {
                 matrix.postRotate(270);
                 break;
             default:
-                // Không cần xoay nếu hướng là mặc định
+                ivPhotoDetect.setImageBitmap(bitmap);
                 return;
         }
-        // Áp dụng ma trận biến đổi cho Bitmap
         Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        bitmap.recycle(); // Giải phóng bộ nhớ của bitmap ban đầu
         ivPhotoDetect.setImageBitmap(rotatedBitmap);
-    }
-
-    public void onQRCodeScanned(String qrCodeValue) {
-        cardOrigin.setVisibility(View.VISIBLE);
-        tvOrigin.setText(qrCodeValue);
+        if(!bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
     }
 }
