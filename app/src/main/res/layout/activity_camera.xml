@@ -56,7 +56,15 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:layout_gravity="center">
-
+        <ImageButton
+            android:id="@+id/ivTips"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="centerCrop"
+            android:src="@drawable/speech_ballon"/>
         <ImageButton
             android:id="@+id/capture"
             android:layout_width="60sp"
@@ -66,7 +74,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerCrop"
             android:src="@drawable/round_camera_24"
-            app:tint="#fff" />
+            app:tint="#ffffff" />
 
         <Button
             android:id="@+id/btnSave"

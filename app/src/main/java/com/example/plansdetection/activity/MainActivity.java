@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,12 +38,15 @@ public class MainActivity extends AppCompatActivity {
         tvDetect = findViewById(R.id.tvDetect);
         tvUser = findViewById(R.id.tvUser);
 
-        ivManage.setImageResource(R.drawable.farm_management_tab_selected);
-        ivDetect.setImageResource(R.drawable.disease_detection_tab);
-        ivUser.setImageResource(R.drawable.user_profile_tab);
+        ivManage.setImageResource(R.drawable.newspaper_selected);
+        ivDetect.setImageResource(R.drawable.bio_energy);
+        ivUser.setImageResource(R.drawable.group);
         tvManage.setTextSize(16);
+        tvManage.setTextColor(Color.parseColor("#1194AA"));
         tvDetect.setTextSize(14);
+        tvDetect.setTextColor(Color.parseColor("#000000"));
         tvUser.setTextSize(14);
+        tvUser.setTextColor(Color.parseColor("#000000"));
         TabClick = true;
         Log.v(TAG, "onCreate Main");
         Intent intent = getIntent();
@@ -74,9 +78,15 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
 
             // Đảm bảo chỉ một Fragment được hiển thị tại một thời điểm
-            ivManage.setImageResource(R.drawable.farm_management_tab);
-            ivDetect.setImageResource(R.drawable.disease_detection_tab_selected);
-            ivUser.setImageResource(R.drawable.user_profile_tab);
+            ivManage.setImageResource(R.drawable.newspaper);
+            ivDetect.setImageResource(R.drawable.bio_energy_selected);
+            ivUser.setImageResource(R.drawable.group);
+            tvManage.setTextSize(14);
+            tvManage.setTextColor(Color.parseColor("#000000"));
+            tvDetect.setTextSize(16);
+            tvDetect.setTextColor(Color.parseColor("#4FBD77"));
+            tvUser.setTextSize(14);
+            tvUser.setTextColor(Color.parseColor("#000000"));
         } else {
             // Nếu không có EXTRA_IMAGE_PATH trong Intent, chuyển sang Fragment quản lý
             Log.v(TAG, "Run Manager");
@@ -87,12 +97,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!TabClick){
-                    ivManage.setImageResource(R.drawable.farm_management_tab_selected);
-                    ivDetect.setImageResource(R.drawable.disease_detection_tab);
-                    ivUser.setImageResource(R.drawable.user_profile_tab);
+                    ivManage.setImageResource(R.drawable.newspaper_selected);
+                    ivDetect.setImageResource(R.drawable.bio_energy);
+                    ivUser.setImageResource(R.drawable.group);
                     tvManage.setTextSize(16);
+                    tvManage.setTextColor(Color.parseColor("#1194AA"));
                     tvDetect.setTextSize(14);
+                    tvDetect.setTextColor(Color.parseColor("#000000"));
                     tvUser.setTextSize(14);
+                    tvUser.setTextColor(Color.parseColor("#000000"));
                     replaceFragment(new ManageFragment());
                     TabClick = true;
                 }
@@ -102,12 +115,15 @@ public class MainActivity extends AppCompatActivity {
         ivDetect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    ivManage.setImageResource(R.drawable.farm_management_tab);
-                    ivDetect.setImageResource(R.drawable.disease_detection_tab_selected);
-                    ivUser.setImageResource(R.drawable.user_profile_tab);
+                    ivManage.setImageResource(R.drawable.newspaper);
+                    ivDetect.setImageResource(R.drawable.bio_energy_selected);
+                    ivUser.setImageResource(R.drawable.group);
                     tvManage.setTextSize(14);
+                    tvManage.setTextColor(Color.parseColor("#000000"));
                     tvDetect.setTextSize(16);
+                    tvDetect.setTextColor(Color.parseColor("#4FBD77"));
                     tvUser.setTextSize(14);
+                    tvUser.setTextColor(Color.parseColor("#000000"));
                     replaceFragment(new DetectFragment());
                     TabClick = false;
             }
@@ -116,12 +132,15 @@ public class MainActivity extends AppCompatActivity {
         ivUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivManage.setImageResource(R.drawable.farm_management_tab);
-                ivDetect.setImageResource(R.drawable.disease_detection_tab);
-                ivUser.setImageResource(R.drawable.user_profile_tab_selected);
+                ivManage.setImageResource(R.drawable.newspaper);
+                ivDetect.setImageResource(R.drawable.bio_energy);
+                ivUser.setImageResource(R.drawable.group_selected);
                 tvManage.setTextSize(14);
+                tvManage.setTextColor(Color.parseColor("#000000"));
                 tvDetect.setTextSize(14);
+                tvDetect.setTextColor(Color.parseColor("#000000"));
                 tvUser.setTextSize(16);
+                tvUser.setTextColor(Color.parseColor("#F6C90B"));
                 replaceFragment(new SettingFragment());
                 TabClick = false;
             }
