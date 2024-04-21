@@ -23,138 +23,123 @@ public class MainActivity extends AppCompatActivity {
 
     ImageView ivManage, ivDetect, ivUser;
     TextView tvManage, tvDetect, tvUser;
-    private boolean TabClick = true;
+    private int tabIndex = 0;
     private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        addControls();
+        addEvents();
 
+        Intent intent = getIntent();
+        Bundle bundle = new Bundle();
+        if(intent != null) {
+            if(intent.hasExtra("EXTRA_IMAGE_PATH")) {
+                tabIndex = 1;
+                String imagePath = intent.getStringExtra("EXTRA_IMAGE_PATH");
+                bundle.putString("EXTRA_IMAGE_PATH", imagePath);
+            }
+
+            if(intent.hasExtra("QR_CODE_DATA")) {
+                String qrCodeValue = intent.getStringExtra("QR_CODE_DATA");
+                bundle.putString("QR_CODE_DATA", qrCodeValue);
+            }
+        }
+        if(tabIndex != 0) {
+            setNavBar(bundle);
+        } else {
+            setNavBar();
+        }
+    }
+
+    private void addControls() {
         ivManage = findViewById(R.id.ivManage);
         ivDetect = findViewById(R.id.ivDetect);
         ivUser = findViewById(R.id.ivUser);
         tvManage = findViewById(R.id.tvManage);
         tvDetect = findViewById(R.id.tvDetect);
         tvUser = findViewById(R.id.tvUser);
+    }
 
-        ivManage.setImageResource(R.drawable.newspaper_selected);
-        ivDetect.setImageResource(R.drawable.bio_energy);
-        ivUser.setImageResource(R.drawable.group);
-        tvManage.setTextSize(16);
-        tvManage.setTextColor(Color.parseColor("#1194AA"));
-        tvDetect.setTextSize(14);
-        tvDetect.setTextColor(Color.parseColor("#000000"));
-        tvUser.setTextSize(14);
-        tvUser.setTextColor(Color.parseColor("#000000"));
-        TabClick = true;
-        Log.v(TAG, "onCreate Main");
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("EXTRA_IMAGE_PATH")) {
-            String imagePath = intent.getStringExtra("EXTRA_IMAGE_PATH");
-            String qrCodeValue = null;
-
-            // Kiểm tra xem có EXTRA_QR_CODE trong Intent không
-            if (intent.hasExtra("QR_CODE_DATA")) {
-                qrCodeValue = intent.getStringExtra("QR_CODE_DATA");
-            }
-
-            // Tạo Bundle để truyền dữ liệu đến DetectFragment
-            Bundle bundle = new Bundle();
-            bundle.putString("EXTRA_IMAGE_PATH", imagePath);
-
-            // Nếu có giá trị QR Code, thêm vào Bundle
-            if (qrCodeValue != null) {
-                bundle.putString("QR_CODE_DATA", qrCodeValue);
-            }
-
-            // Khởi tạo DetectFragment và gửi dữ liệu thông qua Bundle
-            DetectFragment detectFragment = new DetectFragment();
-            detectFragment.setArguments(bundle);
-
-            // Thay thế Fragment hiện tại bằng DetectFragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_layout, detectFragment)
-                    .commit();
-
-            // Đảm bảo chỉ một Fragment được hiển thị tại một thời điểm
-            ivManage.setImageResource(R.drawable.newspaper);
-            ivDetect.setImageResource(R.drawable.bio_energy_selected);
-            ivUser.setImageResource(R.drawable.group);
-            tvManage.setTextSize(14);
-            tvManage.setTextColor(Color.parseColor("#000000"));
-            tvDetect.setTextSize(16);
-            tvDetect.setTextColor(Color.parseColor("#4FBD77"));
-            tvUser.setTextSize(14);
-            tvUser.setTextColor(Color.parseColor("#000000"));
-        } else {
-            // Nếu không có EXTRA_IMAGE_PATH trong Intent, chuyển sang Fragment quản lý
-            Log.v(TAG, "Run Manager");
-            replaceFragment(new ManageFragment());
-        }
-
+    private void addEvents() {
         ivManage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!TabClick){
-                    ivManage.setImageResource(R.drawable.newspaper_selected);
-                    ivDetect.setImageResource(R.drawable.bio_energy);
-                    ivUser.setImageResource(R.drawable.group);
-                    tvManage.setTextSize(16);
-                    tvManage.setTextColor(Color.parseColor("#1194AA"));
-                    tvDetect.setTextSize(14);
-                    tvDetect.setTextColor(Color.parseColor("#000000"));
-                    tvUser.setTextSize(14);
-                    tvUser.setTextColor(Color.parseColor("#000000"));
-                    replaceFragment(new ManageFragment());
-                    TabClick = true;
-                }
+                switchTab(0);
             }
         });
 
         ivDetect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    ivManage.setImageResource(R.drawable.newspaper);
-                    ivDetect.setImageResource(R.drawable.bio_energy_selected);
-                    ivUser.setImageResource(R.drawable.group);
-                    tvManage.setTextSize(14);
-                    tvManage.setTextColor(Color.parseColor("#000000"));
-                    tvDetect.setTextSize(16);
-                    tvDetect.setTextColor(Color.parseColor("#4FBD77"));
-                    tvUser.setTextSize(14);
-                    tvUser.setTextColor(Color.parseColor("#000000"));
-                    replaceFragment(new DetectFragment());
-                    TabClick = false;
+                switchTab(1);
             }
         });
 
         ivUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ivManage.setImageResource(R.drawable.newspaper);
-                ivDetect.setImageResource(R.drawable.bio_energy);
-                ivUser.setImageResource(R.drawable.group_selected);
-                tvManage.setTextSize(14);
-                tvManage.setTextColor(Color.parseColor("#000000"));
-                tvDetect.setTextSize(14);
-                tvDetect.setTextColor(Color.parseColor("#000000"));
-                tvUser.setTextSize(16);
-                tvUser.setTextColor(Color.parseColor("#F6C90B"));
-                replaceFragment(new SettingFragment());
-                TabClick = false;
+                switchTab(2);
             }
         });
     }
 
-    // Phương thức thay thế Fragment
-    private void replaceFragment(Fragment fragment) {
-        if (currentFragment != fragment) { // Kiểm tra fragment hiện tại
+    private void switchTab(int index) {
+        tabIndex = index;
+//        HANDLE WHEN SWITCHING TAB
+//        ...
+        setNavBar();
+    }
+
+    private void replaceFragment(Fragment fragment, Bundle bundle) {
+        if (currentFragment != fragment) {
+            if(bundle != null) {
+                fragment.setArguments(bundle);
+            }
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_layout, fragment);
             fragmentTransaction.commit();
             currentFragment = fragment;
         }
+    }
+
+    private void setDefaultNavBar() {
+        //        SETUP VIEW DEFAULT
+        ivManage.setImageResource(R.drawable.newspaper);
+        ivDetect.setImageResource(R.drawable.bio_energy);
+        ivUser.setImageResource(R.drawable.group);
+        tvManage.setTextSize(14);
+        tvManage.setTextColor(Color.parseColor("#000000"));
+        tvDetect.setTextSize(14);
+        tvDetect.setTextColor(Color.parseColor("#000000"));
+        tvUser.setTextSize(14);
+        tvUser.setTextColor(Color.parseColor("#000000"));
+    }
+
+    private void setNavBar(Bundle bundle) {
+        setDefaultNavBar();
+        if (tabIndex == 0) {
+            replaceFragment(new ManageFragment(), bundle);
+            ivManage.setImageResource(R.drawable.newspaper_selected);
+            tvManage.setTextSize(16);
+            tvManage.setTextColor(Color.parseColor("#1194AA"));
+        } else if (tabIndex == 1) {
+            replaceFragment(new DetectFragment(), bundle);
+            ivDetect.setImageResource(R.drawable.bio_energy_selected);
+            tvDetect.setTextSize(16);
+            tvDetect.setTextColor(Color.parseColor("#4FBD77"));
+        } else if (tabIndex == 2) {
+            replaceFragment(new SettingFragment(), bundle);
+            ivUser.setImageResource(R.drawable.group_selected);
+            tvUser.setTextSize(16);
+            tvUser.setTextColor(Color.parseColor("#F6C90B"));
+        }
+    }
+
+    private void setNavBar() {
+        setNavBar(null);
     }
 }
