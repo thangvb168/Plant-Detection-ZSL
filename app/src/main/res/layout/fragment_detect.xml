@@ -170,7 +170,8 @@
                         android:textSize="18sp"
                         android:paddingEnd="10dp"
                         android:id="@+id/tvOrigin"
-                        android:fontFamily="@font/lato"/>
+                        android:fontFamily="@font/lato"
+                        android:onClick="openUrlInBrowser"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </LinearLayout>

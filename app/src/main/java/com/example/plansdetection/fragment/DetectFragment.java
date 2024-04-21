@@ -13,6 +13,7 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,6 +133,28 @@ public class DetectFragment extends Fragment {
     private void displayQRCode(String msg) {
         cardOrigin.setVisibility(View.VISIBLE);
         tvOrigin.setText(msg);
+// Thiết lập tvOrigin là clickable
+        if (isUrl(msg)) {
+            tvOrigin.setClickable(true);
+            tvOrigin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openUrlInBrowser(v);
+                }
+            });
+        }
+    }
+
+    private boolean isUrl(String text) {
+        return Patterns.WEB_URL.matcher(text).matches();
+    }
+
+    public void openUrlInBrowser(View view) {
+        String url = ((TextView)view).getText().toString();
+        if (isUrl(url)) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        }
     }
 
     private void noDisplayQRCode() {
