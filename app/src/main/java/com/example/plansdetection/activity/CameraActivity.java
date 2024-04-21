@@ -41,11 +41,13 @@ import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.zxing.qrcode.QRCodeReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -209,7 +211,7 @@ public class CameraActivity extends AppCompatActivity {
 //                        GET IMAGE FROM CAMERA
                         Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 //                        String qrCodeData = decodeQRCodeFromBitmap(bitmap);
-                        QR_CODE = decodeQRCodeFromBitmap(bitmap);
+//                        QR_CODE = decodeQRCodeFromBitmap(bitmap);
 
 //                        REBUILD CAMERA
                         previewView.setVisibility(View.GONE);
@@ -258,32 +260,59 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     // Phương thức quét mã QR từ bitmap
-    private String decodeQRCodeFromBitmap(Bitmap bitmap) {
-        Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+//    private String decodeQRCodeFromBitmap(Bitmap bitmap) {
+//        Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
+//        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+//
+//        try {
+//            com.google.zxing.Reader reader = new MultiFormatReader();
+//            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), getRGBLuminanceSource(bitmap))));
+//            Log.d("QRCODE", "6");
+//            Result result = reader.decode(binaryBitmap, hints);
+//            Log.d("QRCODE", "7");
+//            return result.toString();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
-        try {
-            com.google.zxing.Reader reader = new MultiFormatReader();
-            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), getRGBLuminanceSource(bitmap))));
-            Log.d("QRCODE", "6");
-            Result result = reader.decode(binaryBitmap, hints);
-            Log.d("QRCODE", "7");
-            return result.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    // Phương thức trả về mảng các giá trị RGB từ bitmap
-    private int[] getRGBLuminanceSource(Bitmap bitmap) {
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int[] pixels = new int[width * height];
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        return pixels;
-    }
+//    private String decodeQRCodeFromBitmap(Bitmap bitmap) {
+//        Log.v("HANDLE_IMAGE", "START decodeQRCodeFromBitmap");
+//        Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
+//        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+//        Log.v("HANDLE_IMAGE", "START decodeQRCodeFromBitmap 2");
+//        // Optional: Add other hints like PURE_BARCODE or ALLOWED_CHARACTER_SETS
+//
+//        try {
+//            int[] pixels = getRGBLuminanceSource(bitmap);
+//            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), pixels)));
+//            // Consider using QRCodeReader instead of MultiFormatReader for better accuracy
+//            QRCodeReader reader = new QRCodeReader();
+//            Result result = reader.decode(binaryBitmap, hints);
+//            Log.v("HANDLE_IMAGE", "RESULT QRCODE : " + result.toString());
+//            Log.v("HANDLE_IMAGE", "RESULT QRCODE : " + result.getText());
+//            return result.getText();
+//        } catch (NotFoundException e) {
+//            Log.v("HANDLE_IMAGE", "ERROR : " + e.getMessage());
+//            // Handle not finding a QR code gracefully (e.g., return null)
+//            return null;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+//
+//
+//
+//    // Phương thức trả về mảng các giá trị RGB từ bitmap
+//    private int[] getRGBLuminanceSource(Bitmap bitmap) {
+//        int width = bitmap.getWidth();
+//        int height = bitmap.getHeight();
+//        int[] pixels = new int[width * height];
+//        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+//        return pixels;
+//    }
     private int aspectRatio(int width, int height) {
         double previewRatio = (double) Math.max(width, height) / Math.min(width, height);
         if (Math.abs(previewRatio - 4.0 / 3.0) <= Math.abs(previewRatio - 16.0 / 9.0)) {

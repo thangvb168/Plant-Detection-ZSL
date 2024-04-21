@@ -67,7 +67,7 @@ public class Classifier {
         int indexOfClassifier = -1;
         float perOfClassifier = 0.0f;
         TensorImage tensorImage = processImage(image);
-
+        Log.d("HANDLE_IMAGE", "CLASSIFIER::SIZE OF IMAGE : " + image.getHeight() + "x" + image.getWidth());
         TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, IMAGE_SIZE, IMAGE_SIZE, 3}, DataType.FLOAT32);
         inputFeature0.loadBuffer(tensorImage.getBuffer());
 
