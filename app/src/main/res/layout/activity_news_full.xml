@@ -22,16 +22,16 @@
         android:padding="4dp">
 
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/manage_news" />
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/newspaper_selected" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:fontFamily="@font/lato"
-            android:text="News"
+            android:text="Tin tức"
             android:textColor="@color/black"
             android:textSize="26sp" />
     </LinearLayout>

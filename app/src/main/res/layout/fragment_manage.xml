@@ -13,13 +13,13 @@
         android:orientation="horizontal"
         android:layout_gravity="center_horizontal">
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/manage_news"/>
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/newspaper_selected"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="News"
+            android:text="Tin tức"
             android:textSize="26sp"
             android:textColor="@color/black"
             android:layout_gravity="center_vertical"

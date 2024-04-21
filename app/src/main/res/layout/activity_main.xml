@@ -35,16 +35,17 @@
 
             <ImageView
                 android:id="@+id/ivManage"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/farm_management_tab"
-                android:layout_gravity="center"/>
+                android:layout_width="55dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/newspaper" />
 
             <TextView
                 android:id="@+id/tvManage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Manage"
+                android:text="Tin tức"
                 android:textColor="@color/icon_btn_nav"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -61,16 +62,16 @@
 
             <ImageView
                 android:id="@+id/ivDetect"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/disease_detection_tab"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/bio_energy"
                 android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/tvDetect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Detect"
+                android:text="Bác sĩ cây trồng"
                 android:textColor="@color/icon_btn_nav"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -87,16 +88,16 @@
 
             <ImageView
                 android:id="@+id/ivUser"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/user_profile_tab"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/group"
                 android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/tvUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="About Us"
+                android:text="Về chúng tôi"
                 android:textColor="@color/icon_btn_nav"
                 android:textSize="14sp"
                 android:textStyle="bold"
