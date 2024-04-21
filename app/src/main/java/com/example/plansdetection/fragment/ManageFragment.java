@@ -62,7 +62,8 @@ public class ManageFragment extends Fragment implements View.OnClickListener{
         super.onViewCreated(view, savedInstanceState);
         addControl(view);
         setupRecyclerView();
-        getNews(getFullCategories());
+//        getNews(getFullCategories());
+        getNews(Constant.API_CATEGORY_ALL, "*");
     }
 
     private String getFullCategories() {
@@ -118,7 +119,7 @@ public class ManageFragment extends Fragment implements View.OnClickListener{
                 @Override
                 public void onClick(View v) {
                     String selectedCategory = category.getEngTitle();
-                    getNews(selectedCategory);
+                    getNews(selectedCategory, category.getSearch());
                 }
             });
 
@@ -140,12 +141,13 @@ public class ManageFragment extends Fragment implements View.OnClickListener{
             progress_bar.setVisibility(View.GONE);
     }
 //    REBUILD GET NEWS
-    private void getNews(String category) {
+    private void getNews(String category, String search) {
         changeInProgress(true);
         APIService.apiService.getAllNews(
                 Constant.API_KEY,
                 Constant.API_COUNTRY,
-                category
+                category,
+                search
         ).enqueue(new Callback<APIService.AllAPIResponse>() {
             @Override
             public void onResponse(Call<APIService.AllAPIResponse> call, Response<APIService.AllAPIResponse> response) {
@@ -192,6 +194,6 @@ public class ManageFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         Button btn = (Button) v;
         String category = btn.getText().toString();
-        getNews(category);
+        getNews(category, "*");
     }
 }
