@@ -25,17 +25,17 @@ public class Classifier {
     private Resnet50Model2 model;
     public Classifier(Context context) throws IOException {
         Log.d(TAG, "Hello! I'm here");
-        String FILE_CLASSES_PATH = "ml/labels.txt";
-        classes = loadClasses(context);
+        String FILE_CLASSES_PATH = "labels.txt";
+        classes = loadClasses(context, FILE_CLASSES_PATH);
         loadModel(context);
     }
 
-    private List<String> loadClasses(Context context) throws IOException {
+    private List<String> loadClasses(Context context, String path) throws IOException {
         BufferedReader reader = null;
         List<String> classes = new ArrayList<>();
         try {
             reader = new BufferedReader(
-                    new InputStreamReader(context.getAssets().open("labels.txt"), "UTF-8"));
+                    new InputStreamReader(context.getAssets().open(path), "UTF-8"));
 
             String mLine;
             while ((mLine = reader.readLine()) != null) {

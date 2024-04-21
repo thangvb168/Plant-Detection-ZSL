@@ -28,20 +28,9 @@ import com.example.plansdetection.activity.CameraActivity;
 import com.example.plansdetection.helper.ProcessingImage;
 import com.example.plansdetection.helper.ScanQR;
 import com.example.plansdetection.model.Classifier;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.RGBLuminanceSource;
-import com.google.zxing.Result;
-import com.google.zxing.common.GlobalHistogramBinarizer;
-import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.EnumMap;
-import java.util.Map;
 
 
 public class DetectFragment extends Fragment {
@@ -91,14 +80,9 @@ public class DetectFragment extends Fragment {
                 File imgFile = new File(imagePath);
                 if (imgFile.exists()) {
                     Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    ivPhotoDetect.setImageBitmap(myBitmap);
-                    // Tạo Uri từ đường dẫn của ảnh
                     Uri imageUri = Uri.fromFile(imgFile);
-                    // Lấy hướng xoay của ảnh từ Uri
-                    int orientation = getOrientationFromGallery(imageUri);
-                    // Xoay ảnh nếu cần
-//                    rotateBitmap(myBitmap, orientation);
                     handleImage(myBitmap);
+                    rotateBitmap(myBitmap, imageUri);
                 }
             }
 //            SET QR CODE
@@ -126,9 +110,6 @@ public class DetectFragment extends Fragment {
     }
 
     private void handleImage(Bitmap bitmap) {
-//
-
-
         Bitmap imageHandled = processingImage.handleImage(bitmap);
 //        CHECK QRCODE
         scanQR.decode(bitmap, new ScanQR.ScanCallback() {
@@ -186,12 +167,8 @@ public class DetectFragment extends Fragment {
                 try {
                     tvImage.setVisibility(View.GONE);
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
-                    // Kiểm tra hướng xoay của ảnh và xoay nếu cần
                     handleImage(bitmap);
-                    int orientation = getOrientationFromGallery(imageUri);
-                    rotateBitmap(bitmap, orientation);
-                    // Hiển thị ảnh lên ImageView
-                    ivPhotoDetect.setImageBitmap(bitmap);
+                    rotateBitmap(bitmap, imageUri);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -210,7 +187,8 @@ public class DetectFragment extends Fragment {
         return orientation;
     }
 
-    private void rotateBitmap(Bitmap bitmap, int orientation) {
+    private void rotateBitmap(Bitmap bitmap, Uri imageUri) {
+        int orientation = getOrientationFromGallery(imageUri);
         Matrix matrix = new Matrix();
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
@@ -223,12 +201,13 @@ public class DetectFragment extends Fragment {
                 matrix.postRotate(270);
                 break;
             default:
-                // Không cần xoay nếu hướng là mặc định
+                ivPhotoDetect.setImageBitmap(bitmap);
                 return;
         }
-        // Áp dụng ma trận biến đổi cho Bitmap
         Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        bitmap.recycle();
         ivPhotoDetect.setImageBitmap(rotatedBitmap);
+        if(!bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
     }
 }
