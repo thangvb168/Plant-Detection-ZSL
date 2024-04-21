@@ -57,111 +57,153 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:textSize="36sp"
+                android:textSize="30sp"
                 android:text="Chúng tôi có trụ sở tại"
                 android:textColor="@color/black"
-                android:fontFamily="@font/lato"
+                android:fontFamily="@font/ebgaramond"
                 android:layout_marginStart="20dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:textSize="30sp"
-                android:text="Trường Đại học Thủy Lợi, HN"
+                android:textSize="26sp"
+                android:text="Trường Đại học Thủy Lợi, Hà Nội"
                 android:layout_marginBottom="10dp"
                 android:textColor="@color/black"
-                android:fontFamily="@font/lato"
+                android:fontFamily="@font/ebgaramond"
                 android:layout_marginStart="20dp"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:layout_marginHorizontal="20dp"
-                android:fontFamily="@font/lato"
-                android:layout_marginBottom="30dp"
-                android:text="Ngôi trường đã liên tiếp nhận được các giải thưởng cao quý trong các lĩnh vực nhiều năm. "
+                android:fontFamily="@font/ebgaramond"
+                android:layout_marginBottom="70dp"
+                android:text="Ngôi trường đã liên tiếp nhận được các giải thưởng cao quý trong nhiều năm. "
                 />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:background="@drawable/bg_blur"
+                android:layout_marginBottom="70dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/plant_identification_apps"
+                    android:scaleType="centerCrop"
+                    android:alpha="0.35"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/tv1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="150dp"
+                        android:layout_marginBottom="5dp"
+                        android:fontFamily="@font/ebgaramond"
+                        android:gravity="center"
+                        android:paddingHorizontal="25dp"
+                        android:text="Chúng tôi có sứ mệnh phát hiện nông sản giả mạo và mầm bệnh của giống cây trồng tại Việt Nam"
+                        android:textColor="@color/black"
+                        android:textSize="27sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="400dp"
+                        android:layout_height="100dp"
+                        android:layout_below="@id/tv1"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/ebgaramond"
+                        android:gravity="center"
+                        android:paddingHorizontal="45dp"
+                        android:text="Chúng tôi tin rằng đã đến lúc mọi người đều có thể phát hiện sâu bệnh trên các giống cây trồng tại Việt Nam"
+                        android:textColor="@color/black"
+                        android:textSize="19sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+            </FrameLayout>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="440dp"
-                android:background="@color/black"
-                android:layout_marginVertical="20dp"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="20dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:fontFamily="@font/lato"
-                    android:paddingHorizontal="25dp"
-                    android:layout_marginTop="100dp"
-                    android:layout_marginBottom="20dp"
-                    android:textStyle="bold"
+                    android:text="Câu chuyện của chúng tôi"
+                    android:layout_gravity="center_vertical"
                     android:textSize="27sp"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="Chúng tôi có sứ mệnh phát hiện nông sản giả mạo và mầm bệnh của giống cây trồng tại Việt Nam"/>
-                <TextView
-                    android:layout_width="400dp"
-                    android:layout_height="100dp"
-                    android:textColor="#7F8489"
-                    android:fontFamily="@font/lato"
-                    android:paddingHorizontal="45dp"
                     android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:text="Chúng tôi tin rằng đã đến lúc mọi người đều có thể phát hiện sâu bệnh trên các giống cây trồng tại Việt Nam"/>
-
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/ebgaramond"
+                    android:layout_marginEnd="10dp"
+                   />
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/magic_book"/>
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Câu chuyện của chúng tôi"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:fontFamily="@font/lato"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="10dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:lineSpacingExtra="3dp"
+                android:lineSpacingExtra="4dp"
                 android:text="Từ sự nhận thức về nhu cầu ngày càng tăng của thị trường đối với các loại nông sản quý hiếm tại Việt Nam, chúng tôi nhận ra rằng việc nhận dạng và phân biệt sản phẩm thật giả cũng như ứng phó với tỷ lệ thiệt hại do sâu bệnh đều là thách thức lớn, ảnh hưởng đến năng suất và chất lượng sản phẩm."
                 android:textSize="22sp"
-                android:fontFamily="@font/lato"
-                android:layout_marginHorizontal="20dp" />
+                android:fontFamily="@font/ebgaramond"
+                android:layout_marginHorizontal="25dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:lineSpacingExtra="3dp"
+                android:lineSpacingExtra="4dp"
                 android:text="Với mục tiêu giải quyết những thách thức trong sản xuất nông nghiệp, chúng tôi đã phát triển hệ thống phần mềm ứng dụng AI để nhận dạng tự động các loại nông sản quý hiếm và hỗ trợ người nông dân phát hiện sớm mầm bệnh trên cây trồng. Sứ mệnh của chúng tôi là nâng cao giá trị sản xuất và đảm bảo an toàn thực phẩm cho cộng đồng."
                 android:textSize="22sp"
-                android:fontFamily="@font/lato"
-                android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="20dp" />
+                android:fontFamily="@font/ebgaramond"
+                android:layout_marginVertical="15dp"
+                android:layout_marginHorizontal="25dp" />
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
-                android:layout_marginVertical="30dp"
+                android:layout_marginTop="50dp"
                 android:layout_marginHorizontal="50dp"
-                android:src="@drawable/img" />
+                android:src="@drawable/team"
+                android:scaleType="matrix"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginVertical="15dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:gravity="center_vertical"
+                    android:text="Nhà phát triển"
+                    android:textSize="30sp"
+                    android:fontFamily="@font/ebgaramond"
+                    android:textStyle="bold"
+                    android:textColor="@color/black" />
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/teamwork"/>
+            </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:text="Giảng viên hướng dẫn"
-                android:textSize="30sp"
-                android:fontFamily="@font/lato"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginBottom="15dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Giáo viên hướng dẫn qwertyuiopasd fghjkl;asdfghjklzxcvbnmqwertyuio sưedrftgyhujkqwertyuiasdfghjk"
+                android:text="Chúng tôi là đội ngũ gồm bốn thành viên sáng tạo, đam mê công nghệ và tương lai, với sứ mệnh tạo ra những giải pháp sáng tạo giúp cải thiện cuộc sống. Với sự hướng dẫn của giảng viên tận tâm Trần Anh Đạt, chúng tôi đã hợp tác chặt chẽ để phát triển ứng dụng nhận diện giống cây trồng và mầm bệnh, mang lại giá trị thực cho cộng đồng nông dân và người tiêu dùng."
                 android:textSize="22sp"
+                android:lineSpacingExtra="4dp"
                 android:layout_marginHorizontal="20dp"
-                android:fontFamily="@font/lato" />
+                android:fontFamily="@font/ebgaramond" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </RelativeLayout>
