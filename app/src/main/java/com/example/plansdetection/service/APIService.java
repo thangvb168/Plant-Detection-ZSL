@@ -56,6 +56,7 @@ public interface APIService {
     Call<AllAPIResponse> getAllNews(
             @Query("apikey") String apikey,
             @Query("country") String country,
-            @Query("category") String category
+            @Query("category") String category,
+            @Query("q") String search
     );
 }
