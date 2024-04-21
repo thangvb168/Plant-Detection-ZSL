@@ -1,0 +1,19 @@
+<!-- res/drawable/background_with_blur.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Layer chứa ảnh -->
+    <item>
+        <bitmap
+            android:src="@drawable/plant_identification_apps"
+            android:gravity="center"
+            android:alpha="0.2" />
+    </item>
+
+    <!-- Layer chứa màu mờ -->
+    <item>
+        <color
+            android:color="#40ffffff"
+        android:alpha="1" />
+    </item>
+
+</layer-list>
