@@ -27,6 +27,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
@@ -63,6 +64,8 @@ public class CameraActivity extends AppCompatActivity {
     Button btnSave;
     private PreviewView previewView;
     int cameraFacing = CameraSelector.LENS_FACING_BACK;
+//    RESULT OF QRCODE
+    String QR_CODE = null;
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
         @Override
         public void onActivityResult(Boolean result) {
@@ -112,8 +115,14 @@ public class CameraActivity extends AppCompatActivity {
                 if (imagePath != null) {
                     Bundle bundle = new Bundle();
                     bundle.putString("EXTRA_IMAGE_PATH", imagePath);
+                    if(QR_CODE != null) {
+                        bundle.putString("QR_CODE_DATA", QR_CODE);
+                    }
                     Intent intent = new Intent(CameraActivity.this, MainActivity.class);
                     intent.putExtras(bundle);
+
+
+
                     startActivity(intent);
                 } else {
                     Toast.makeText(CameraActivity.this, "Don't have image", Toast.LENGTH_SHORT).show();
@@ -197,35 +206,31 @@ public class CameraActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+//                        GET IMAGE FROM CAMERA
                         Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                        String qrCodeData = decodeQRCodeFromBitmap(bitmap);
-                        if (qrCodeData != null) {
-                            // Nếu tìm thấy mã QR, truyền giá trị sang DetectFragment
-                            Bundle bundle = new Bundle();
-                            bundle.putString("QR_CODE_DATA", qrCodeData);
-                            Intent intent = new Intent(CameraActivity.this, DetectFragment.class);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                        } else {
-                            previewView.setVisibility(View.GONE);
-                            capturedImageView.setVisibility(View.VISIBLE);
-                            ExifInterface exif = null;
-                            try {
-                                exif = new ExifInterface(file.getAbsolutePath());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            int orientation = ExifInterface.ORIENTATION_NORMAL;
-                            if (exif != null) {
-                                orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                            }
-                            bitmap = rotateBitmap(bitmap, orientation);
-                            capturedImageView.setImageBitmap(bitmap);
-                            capturedImageView.setTag(file.getAbsolutePath());
-                            saveImageToGallery(bitmap);
-                            btnSave.setVisibility(View.VISIBLE);
-                            Toast.makeText(CameraActivity.this, "Tap the screen to retake the photo", Toast.LENGTH_LONG).show();
+//                        String qrCodeData = decodeQRCodeFromBitmap(bitmap);
+                        QR_CODE = decodeQRCodeFromBitmap(bitmap);
+
+//                        REBUILD CAMERA
+                        previewView.setVisibility(View.GONE);
+                        capturedImageView.setVisibility(View.VISIBLE);
+                        ExifInterface exif = null;
+                        try {
+                            exif = new ExifInterface(file.getAbsolutePath());
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+                        int orientation = ExifInterface.ORIENTATION_NORMAL;
+                        if (exif != null) {
+                            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                        }
+                        bitmap = rotateBitmap(bitmap, orientation);
+                        capturedImageView.setImageBitmap(bitmap);
+                        capturedImageView.setTag(file.getAbsolutePath());
+                        saveImageToGallery(bitmap);
+                        btnSave.setVisibility(View.VISIBLE);
+                        Toast.makeText(CameraActivity.this, "Tap the screen to retake the photo", Toast.LENGTH_LONG).show();
+//                        }
                     }
                 });
             }
@@ -260,13 +265,17 @@ public class CameraActivity extends AppCompatActivity {
         try {
             com.google.zxing.Reader reader = new MultiFormatReader();
             BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), getRGBLuminanceSource(bitmap))));
+            Log.d("QRCODE", "6");
             Result result = reader.decode(binaryBitmap, hints);
-            return result.getText();
+            Log.d("QRCODE", "7");
+            return result.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
+
     // Phương thức trả về mảng các giá trị RGB từ bitmap
     private int[] getRGBLuminanceSource(Bitmap bitmap) {
         int width = bitmap.getWidth();

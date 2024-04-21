@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity {
             String qrCodeValue = null;
 
             // Kiểm tra xem có EXTRA_QR_CODE trong Intent không
-            if (intent.hasExtra("EXTRA_QR_CODE")) {
-                qrCodeValue = intent.getStringExtra("EXTRA_QR_CODE");
+            if (intent.hasExtra("QR_CODE_DATA")) {
+                qrCodeValue = intent.getStringExtra("QR_CODE_DATA");
             }
 
             // Tạo Bundle để truyền dữ liệu đến DetectFragment
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Nếu có giá trị QR Code, thêm vào Bundle
             if (qrCodeValue != null) {
-                bundle.putString("EXTRA_QR_CODE", qrCodeValue);
+                bundle.putString("QR_CODE_DATA", qrCodeValue);
             }
 
             // Khởi tạo DetectFragment và gửi dữ liệu thông qua Bundle
